@@ -224,11 +224,24 @@ class Interval{
     }   
 }
 
-modes = {
+const modeSteps = {
     major: [2,2,1,2,2,2,1],
     minor: [2,1,2,2,1,2,2],
+    dorian: [2,1,2,2,2,1,2],
+    phrygian: [1,2,2,2,1,2,2],
+    lydian: [2,2,2,1,2,2,1],
+    mixolydian: [2,2,1,2,2,1,2],
+    pentatonic: [2,2,3,2,3],
+    minorPentatonic: [3,2,2,3,2],
+    fifthModeHarmonicMinor: [1,3,1,2,1,2,2],
 }
-/*! NEEDS MORE MORE MORE MORE MOOOOORE */
+const modeLetterSteps = {
+    major: [1,1,1,1,1,1,1],
+    minor: [1,1,1,1,1,1,1],
+    pentatonic: [1,1,2,1,2],
+    minorPentatonic: [2,1,1,2,1],
+}
+
 class Mode{
 
     constructor(rootNote,quality){
@@ -242,11 +255,13 @@ class Mode{
         this.quality = quality
 
         this.spelling = [this.rootNote]
-        this.steps = modes[quality]
+        this.steps = modeSteps[quality]
+        this.letterSteps = modeLetterSteps[quality]
         var nextPitch = this.rootNote.pitch
         var nextLetter = this.rootNote.letter
         const maj2 = new Interval("maj","2nd")
         const min2 = new Interval("min", "2nd")
+        const aug2 = new Interval("aug", "2nd")
         var i
         var nextStep
         var n = 1
@@ -264,6 +279,10 @@ class Mode{
                 nextPitch += min2.pitchDifference
                 nextLetter += min2.letterDifference
             }
+            else if(nextStep == 3){
+                nextPitch += 3
+                nextLetter += 1
+            }
             if(nextPitch > 11){
                 nextPitch -= 12
             }
@@ -276,11 +295,77 @@ class Mode{
     }
 }
 
+const qualities = {
+    major: {
+        chromaticSteps: [4,7],
+        jazzChromaticSteps: [4,9,14,19],
+        arpeggioSteps1: [0,4,7,9],
+        arpeggioSteps2: [4,7,11,14]
+    },
+    minor: {
+        chromaticSteps: [3,7],
+        jazzChromaticSteps: [3,7,9],
+        arpeggioSteps1: [0,3,7,9],
+        arpeggioSteps2: [3,7,9,12]
+    },
+    major7: {
+        chromaticSteps: [4,7,11],
+        jazzChromaticSteps: [4,11,14,16],
+        arpeggioSteps1: [0,4,7,11],
+        arpeggioSteps2: [4,7,11,14]
+    },
+    minor7: {
+        chromaticSteps: [3,7,10],
+        jazzChromaticSteps: [5,10,15,19],
+        arpeggioSteps1: [0,3,7,10],
+        arpeggioSteps2: [0,5,10,19]
+    },
+    minor9: {
+        chromaticSteps: [3,7,10,14],
+        jazzChromaticSteps: [10,14,15,19],
+        arpeggioSteps1: [3,7,10,14],
+        arpeggioSteps2: [7,10,14,15]
+    },
+    dom7: {
+        chromaticSteps: [4,10],
+        jazzChromaticSteps: [10,14,16,21],
+        arpeggioSteps1: [4,7,10,14],
+        arpeggioSteps2: [7,10,14,16]
+    },
+    dom7b9: {
+        chromaticSteps: [4,10,13],
+        jazzChromaticSteps: [4,10,13],
+        arpeggioSteps1: [4,7,10,13],
+        arpeggioSteps2: [7,10,13,16]
+    }
+}
+
+class Chord{
+    constructor(rootNote,quality,mode){
+        if(rootNote instanceof Note){
+            this.rootNote = rootNote
+        }
+        else{
+            this.rootNote = new Note(rootNote)
+        }
+        mode = mode || null
+        this.mode = mode ? new Mode(rootNote,mode) : null
+        this.quality = quality
+        this.qualityObject = qualities[quality]
+        this.chromaticSteps = qualities[quality].chromaticSteps
+        this.jazzChromaticSteps = qualities[quality].jazzChromaticSteps
+        this.arpeggioSteps1 = qualities[quality].arpeggioSteps1
+        this.arpeggioSteps2 = qualities[quality].arpeggioSteps2
+    }
+}
+    
+
 class Tempo {
     constructor(bpm){
         this.bpm = bpm
         /* beat len in milliseconds for JS */
-        this.beatLen = 60000 / bpm
+        this.beatLenMs = 60000 / bpm
+        this.beatLenS = 60 / bpm
     }
 }
 
