@@ -15,6 +15,9 @@ console.log(key)
 let keyInFlats = key.spelling.slice().map(note => note.enharmonic("b"))
 
 let allPianoFlats = keyInFlats.map(note => {
+    if(note.name == "Cb"){
+        return "B" + "0"
+    }
     if(note.name[0] == "A" || note.name[0] == "B"){
         return note.name + "0"
     }
@@ -268,7 +271,7 @@ function randVoice4(midVoicesIndexIntvl,topVoicesIndexIntvl,noteAgainstIndex){
 }
 
 const startingNote = keyInFlats[0] // str
-const harmonizedStartingNote = randHarmNote(null,startingNote)
+let harmonizedStartingNote = randHarmNote(null,startingNote)
 
 let prevIndexIntvl = allPianoFlats.indexOf(startingNote.name + String(startingNote.octave)) - allPianoFlats.indexOf(harmonizedStartingNote.name + String(harmonizedStartingNote.octave))
 let voice2Index
@@ -338,6 +341,4 @@ function startPlaying(){
     }
 }
 
-//playButton.addEventListener('click',startPlaying)
-
-window.addEventListener('keyup',startPlaying)
+playButton.addEventListener('click',startPlaying)
